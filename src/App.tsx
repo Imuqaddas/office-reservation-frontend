@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import { Buildings } from "./pages/Buildings";
-import CreateBuilding from "./pages/CreateBuilding/CreateOffice";
+import CreateBuilding from "./pages/CreateBuilding/CreateBuilding";
 import CreateOffice from "./pages/CreateOffice/CreateOffice";
 import CreateRenting from "./pages/CreateRenting/CreateRenting";
 import CreateRentingWithId from "./pages/CreateRentingWithId/CreateRentingWithId";
