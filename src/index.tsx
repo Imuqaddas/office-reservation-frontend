@@ -5,7 +5,7 @@ import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
 const client = new ApolloClient({
-  uri: "http://192.168.0.101:4000",
+  uri: process.env.NODE_ENV === "development" ? "http://192.168.0.101:4000" : "https://api.iroda.xyz",
 
   cache: new InMemoryCache(),
 });
