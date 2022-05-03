@@ -1,13 +1,25 @@
 import { createRoot } from "react-dom/client";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { ApolloClient, ApolloLink, HttpLink, InMemoryCache, concat, ApolloProvider } from "@apollo/client";
 
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
-const client = new ApolloClient({
-  uri: process.env.NODE_ENV === "development" ? "http://192.168.0.101:4000" : "https://api.iroda.xyz",
+const httpLink = new HttpLink({ uri: process.env.NODE_ENV === "development" ? "http://192.168.0.101:4000" : "https://api.iroda.xyz" });
 
+const authMiddleware = new ApolloLink((operation, forward) => {
+  operation.setContext(({ headers = {} }) => ({
+    headers: {
+      ...headers,
+      "x-auth-token": localStorage.getItem("token") || null,
+    },
+  }));
+
+  return forward(operation);
+});
+
+const client = new ApolloClient({
   cache: new InMemoryCache(),
+  link: concat(authMiddleware, httpLink),
 });
 
 const container = document.getElementById("root");
