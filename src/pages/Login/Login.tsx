@@ -43,7 +43,7 @@ function Login() {
       <Typography variant="h3" color="white">
         Login
       </Typography>
-      <img src="https://officereservation.s3.eu-central-1.amazonaws.com/test-company3" alt="logo" css={logoStyles} />
+      <img src={`https://officereservation.s3.eu-central-1.amazonaws.com/${window.location.hostname.split(".")[0]}`} alt="logo" css={logoStyles} />
       <form css={formStyles}>
         <FormControl fullWidth>
           <InputLabel>Email</InputLabel>
