@@ -10,12 +10,31 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Sidebar from "../Sidebar/Sidebar";
 import LayoutProps from "./LayoutProps";
-import Avatar from "@mui/material/Avatar";
+import Avatar from "../Avatar/Avatar";
+import useAuth from "../../hooks/useAuth";
+import Tooltip from "@mui/material/Tooltip";
+import Popover from "@mui/material/Popover";
+import Button from "@mui/material/Button";
+import useLogout from "../../hooks/useLogout";
 
 const drawerWidth = 240;
 
 const ResponsiveDrawer: React.FC<LayoutProps> = (props: LayoutProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const user = useAuth();
+  const logout = useLogout();
+
+  const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
+  const open = Boolean(anchorEl);
+  const id = open ? "simple-popover" : undefined;
+
+  const handleAvatarClick = (event: React.MouseEvent<HTMLDivElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleAvatarClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -40,7 +59,25 @@ const ResponsiveDrawer: React.FC<LayoutProps> = (props: LayoutProps) => {
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             Office Reservation
           </Typography>
-          <Avatar>H</Avatar>
+          {user && (
+            <Tooltip title={`${user.firstname} ${user.lastname}`} placement="right-start">
+              <div onClick={handleAvatarClick}>
+                <Avatar firstname={user.firstname} lastname={user.lastname} />
+              </div>
+            </Tooltip>
+          )}
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleAvatarClose}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+          >
+            <Button onClick={logout}>Logout</Button>
+          </Popover>
         </Toolbar>
       </AppBar>
       <Box component="nav" sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }} aria-label="mailbox folders">
