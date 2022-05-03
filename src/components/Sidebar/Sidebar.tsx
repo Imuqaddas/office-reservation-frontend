@@ -24,7 +24,7 @@ function Sidebar() {
     <div>
       <Toolbar>
         <img
-          src="/images/test-company1.png"
+          src={`https://officereservation.s3.eu-central-1.amazonaws.com/${window.location.hostname.split(".")[0]}`}
           css={css`
             height: 65px;
           `}
@@ -74,11 +74,11 @@ function Sidebar() {
           </ListItemIcon>
           <ListItemText primary="Bookings" />
         </ListItem>
-        <ListItem button key={"Users"}>
+        <ListItem button key={"Customers"}>
           <ListItemIcon>
             <Face />
           </ListItemIcon>
-          <ListItemText primary="Users" />
+          <ListItemText primary="Customers" />
         </ListItem>
       </List>
       <Divider />
