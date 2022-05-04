@@ -1,42 +1,53 @@
 /** @jsxImportSource @emotion/react */
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { css } from "@emotion/react";
-import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
-import CircularProgress from "@mui/material/CircularProgress";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Paper from "@mui/material/Paper";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Button from "@mui/material/Button";
 import Tab from "@mui/material/Tab";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableRow from "@mui/material/TableRow";
+
 import Tabs from "@mui/material/Tabs";
-import TextField from "@mui/material/TextField";
 
 import Typography from "@mui/material/Typography";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Layout from "../../components/Layout/Layout";
+import CreateUser from "./components/CreateUser";
+import OfficeDataTable from "./components/OfficeDataTable";
+import SearchUser from "./components/SearchUser";
+import Term from "./components/Term";
+import { CREATE_RENTING, Data as RentingData } from "./gql/createRentingMutation";
 import { OFFICE, Data as OfficeData } from "./gql/officeQuery";
-import { USERS, Data as UsersData, User } from "./gql/usersQuery";
 
-function CreateOffice() {
-  const { officeId } = useParams();
+function CreateRentingWithId() {
+  const { officeId, buildingId } = useParams();
   const { data: officeData } = useQuery<OfficeData>(OFFICE, { variables: { id: parseInt(officeId as string, 10) } });
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [userId, setUserId] = useState<number>();
+  const [start, setStart] = useState("");
+  const [end, setEnd] = useState("");
+  const [months, setMonths] = useState("");
+  const [createRenting] = useMutation<RentingData>(CREATE_RENTING, {
+    variables: {
+      office: parseInt(officeId as string, 10),
+      user: userId,
+      start: new Date(start).toISOString(),
+      end: new Date(end).toISOString(),
+      months: parseInt(months, 10),
+      created_at: new Date().toISOString(),
+    },
+  });
+  const navigate = useNavigate();
 
   return (
     <Layout>
       <Typography variant="h4">Create renting</Typography>
-      <Typography variant="h5">Office</Typography>
+      <Typography variant="h5" css={headerStyle}>
+        Office
+      </Typography>
       <OfficeDataTable officeData={officeData} />
-      <Typography variant="h5">User</Typography>
+      <Typography variant="h5" css={headerStyle}>
+        User
+      </Typography>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs value={tabIndex} onChange={(_, newValue: number) => setTabIndex(newValue)}>
           <Tab label="Find user" />
@@ -45,81 +56,36 @@ function CreateOffice() {
       </Box>
 
       {tabIndex === 0 && <SearchUser onUserChange={setUserId} />}
-      {tabIndex === 1 && <SearchUser onUserChange={setUserId} />}
-      {userId}
-    </Layout>
-  );
-}
+      {tabIndex === 1 && <CreateUser onUserChange={setUserId} />}
 
-function OfficeDataTable(props: { officeData: OfficeData | undefined }) {
-  return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableBody>
-          <TableRow>
-            <TableCell variant="head">ID</TableCell>
-            <TableCell>{props.officeData?.office.id}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell variant="head">Building</TableCell>
-            <TableCell>{props.officeData?.office.building.name}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell variant="head">Floor</TableCell>
-            <TableCell>{props.officeData?.office.floor}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell variant="head">Office number</TableCell>
-            <TableCell>{props.officeData?.office.office_number}</TableCell>
-          </TableRow>
-          <TableRow>
-            <TableCell variant="head">Size</TableCell>
-            <TableCell>{props.officeData?.office.size} m2</TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-}
-
-function SearchUser(props: { onUserChange: (id: number) => void }) {
-  const [open, setOpen] = useState(false);
-  const { data: usersData, loading } = useQuery<UsersData>(USERS);
-
-  return (
-    <Box sx={{ backgroundColor: "white", padding: "15px" }}>
-      <Autocomplete
-        sx={{ width: 300, marginTop: "15px" }}
-        open={open}
-        onOpen={() => {
-          setOpen(true);
+      <Term
+        onDatesChange={(start: string, months: string, end: string) => {
+          setStart(start);
+          setMonths(months);
+          setEnd(end);
         }}
-        onClose={() => {
-          setOpen(false);
-        }}
-        onChange={(event, newValue) => {
-          if (newValue !== null) props.onUserChange(newValue.id);
-        }}
-        isOptionEqualToValue={(option: User, value: User) => option.id === value.id}
-        getOptionLabel={(option: User) => `#${option.id} - ${option.firstname} ${option.lastname} - ${option.email}`}
-        options={usersData?.users ?? []}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Users"
-            InputProps={{
-              ...params.InputProps,
-              endAdornment: (
-                <>
-                  {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                  {params.InputProps.endAdornment}
-                </>
-              ),
-            }}
-          />
-        )}
       />
-    </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-end",
+          paddingTop: "20px",
+        }}
+      >
+        <Button
+          variant="contained"
+          color="success"
+          onClick={async () => {
+            const resp = await createRenting();
+            navigate(`/renting/${resp.data?.renting.id}`);
+          }}
+        >
+          Create
+        </Button>
+      </Box>
+    </Layout>
   );
 }
 
@@ -127,4 +93,8 @@ const inputStyle = css`
   margin-top: 20px;
 `;
 
-export default CreateOffice;
+const headerStyle = css`
+  margin: 10px 0;
+`;
+
+export default CreateRentingWithId;
