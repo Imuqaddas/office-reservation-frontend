@@ -20,11 +20,13 @@ import { Link as RouterLink } from "react-router-dom";
 import Link from "@mui/material/Link";
 
 function Sidebar() {
+  const subdomain = window.location.hostname.split(".")[0];
+  const logoPath = subdomain !== "localhost" ? subdomain : "company1";
   return (
     <div>
       <Toolbar>
         <img
-          src={`https://officereservation.s3.eu-central-1.amazonaws.com/${window.location.hostname.split(".")[0]}`}
+          src={`https://officereservation.s3.eu-central-1.amazonaws.com/${logoPath}`}
           css={css`
             height: 65px;
           `}

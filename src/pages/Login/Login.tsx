@@ -38,12 +38,15 @@ function Login() {
     setTimeout(() => setError(""), 3000);
   };
 
+  const subdomain = window.location.hostname.split(".")[0];
+  const logoPath = subdomain !== "localhost" ? subdomain : "company1";
+
   return (
     <Box css={containerStyles}>
       <Typography variant="h3" color="white">
         Login
       </Typography>
-      <img src={`https://officereservation.s3.eu-central-1.amazonaws.com/${window.location.hostname.split(".")[0]}`} alt="logo" css={logoStyles} />
+      <img src={`https://officereservation.s3.eu-central-1.amazonaws.com/${logoPath}`} alt="logo" css={logoStyles} />
       <form css={formStyles}>
         <FormControl fullWidth>
           <InputLabel>Email</InputLabel>
