@@ -10,14 +10,15 @@ import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
 
 function Term(props: { onDatesChange: (start: string, months: string, end: string) => void }) {
-  const [start, setStart] = useState(new Date().toISOString());
+  const [start, setStart] = useState(new Date().toISOString().split("T")[0]);
   const [end, setEnd] = useState("");
   const [length, setLength] = useState("0");
+  console.log(start);
 
   useEffect(() => {
     const s = new Date(start);
     const e = new Date(s);
-    e.setDate(e.getDate() + parseInt(length, 10));
+    e.setMonth(e.getMonth() + parseInt(length, 10));
 
     const e2 = e.toISOString().split("T")[0];
     setEnd(e2);
