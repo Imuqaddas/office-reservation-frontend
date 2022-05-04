@@ -23,8 +23,8 @@ function CreateRentingWithId() {
   const { data: officeData } = useQuery<OfficeData>(OFFICE, { variables: { id: parseInt(officeId as string, 10) } });
   const [tabIndex, setTabIndex] = useState<number>(0);
   const [userId, setUserId] = useState<number>();
-  const [start, setStart] = useState("");
-  const [end, setEnd] = useState("");
+  const [start, setStart] = useState(new Date().toISOString());
+  const [end, setEnd] = useState(new Date().toISOString());
   const [months, setMonths] = useState("");
   const [createRenting] = useMutation<RentingData>(CREATE_RENTING, {
     variables: {
