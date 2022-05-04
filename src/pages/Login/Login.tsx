@@ -25,7 +25,7 @@ function Login() {
       const resp = await login();
 
       saveToken(resp.data?.token as string);
-      navigate("/");
+      setTimeout(() => navigate("/"), 1000);
     } catch (err) {
       const error = err as Error;
       createError(error.message);
